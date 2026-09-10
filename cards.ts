@@ -1,4 +1,20 @@
 const sourceCards = [{
+    "createdAt": 1789036951479,
+    "id": "63d2ee88-d001-421e-af7e-a5764f2cfe7a",
+    "text": "Яныма утыр әле."
+}, {
+    "createdAt": 1789036944168,
+    "id": "2e516123-9375-4eee-963c-cc350b9bc6ed",
+    "text": "Әйдә, бераз сөйләшәбез."
+}, {
+    "createdAt": 1788955776156,
+    "id": "f8a21015-a15e-4512-8dfd-5bf4f708fb06",
+    "text": "Таптым, рәхмәт!"
+}, {
+    "createdAt": 1788955769056,
+    "id": "00d54b3e-5882-44a8-96dc-56b7b6372fd1",
+    "text": "Минем телефоным кайда?"
+}, {
     "createdAt": 1788862783073,
     "id": "81a784ab-dd90-4ef9-a33f-393fac5534b3",
     "text": "Мине көт әле"
@@ -153,6 +169,10 @@ const starterCards = [
 ] as const satisfies readonly BuiltinCard[];
 
 const translations: Record<string, string> = {
+  '63d2ee88-d001-421e-af7e-a5764f2cfe7a': 'Сядь рядом со мной, пожалуйста.',
+  '2e516123-9375-4eee-963c-cc350b9bc6ed': 'Давай немного поговорим.',
+  'f8a21015-a15e-4512-8dfd-5bf4f708fb06': 'Нашёл, спасибо!',
+  '00d54b3e-5882-44a8-96dc-56b7b6372fd1': 'Где мой телефон?',
   '81a784ab-dd90-4ef9-a33f-393fac5534b3': 'Подожди меня, пожалуйста.',
   'aa7ed2d5-0ad5-4824-8b7d-aa8c69c0b8f8': 'Помой руки, пожалуйста.',
   '36e1816b-f4ca-4dd1-84fd-a5368ecd1566': 'Я ещё немного поиграю.',
