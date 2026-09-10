@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { cards } from '../../../cards';
 import { AppStateProvider } from '../../application/AppState';
 import { createDefaultState } from '../../features/cards/domain/model';
@@ -9,18 +9,21 @@ import { MemoryStateRepository } from '../../infrastructure/storage/repository';
 import { StudyPage } from './StudyPage';
 
 function renderStudy(cardCount = 2) {
+  const random = vi.spyOn(Math, 'random').mockReturnValue(0.999);
   const selected = cards.slice(0, cardCount);
   const state = {
     ...createDefaultState(),
     groups: [{ id: 'group-test' as const, name: 'Тест', cardIds: selected.map((card) => card.id) }]
   };
-  return render(
+  const result = render(
     <MemoryRouter initialEntries={['/study/group-test']}>
       <AppStateProvider repository={new MemoryStateRepository(state)}>
         <Routes><Route path="/study/:groupId" element={<StudyPage />} /></Routes>
       </AppStateProvider>
     </MemoryRouter>
   );
+  random.mockRestore();
+  return result;
 }
 
 async function finishCardTransition() {

@@ -29,21 +29,31 @@ export interface StudySession extends SessionSnapshot {
 
 function priority(cardId: CardId, progress: Partial<Record<CardId, CardProgress>>, now: Date): number {
   const item = progress[cardId];
-  if (!item) return 1;
-  return new Date(item.dueAt).getTime() <= now.getTime() ? 0 : 2;
+  if (!item) return 0;
+  return new Date(item.dueAt).getTime() <= now.getTime() ? 1 : 2;
+}
+
+function shuffle<T>(items: readonly T[], random: () => number): T[] {
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    [result[index], result[swapIndex]] = [result[swapIndex]!, result[index]!];
+  }
+  return result;
 }
 
 export function createStudySession(
   cardIds: readonly CardId[],
   progress: Partial<Record<CardId, CardProgress>>,
-  now = new Date()
+  now = new Date(),
+  random: () => number = Math.random
 ): StudySession {
   const sourceCardIds = [...new Set(cardIds)];
   if (sourceCardIds.length === 0) throw new Error('В группе нет карточек для изучения');
-  const ordered = sourceCardIds
-    .map((id, index) => ({ id, index, priority: priority(id, progress, now) }))
-    .sort((a, b) => a.priority - b.priority || a.index - b.index)
-    .map(({ id }) => id);
+  const ordered = [0, 1, 2].flatMap((priorityValue) => shuffle(
+    sourceCardIds.filter((id) => priority(id, progress, now) === priorityValue),
+    random
+  ));
   const [currentCardId = null, ...queue] = ordered;
   return {
     sourceCardIds,
@@ -71,6 +81,7 @@ export function skipMissingCards(session: StudySession, existingIds: ReadonlySet
 
 const KNOWN_INTERVALS_MS = [86_400_000, 259_200_000, 604_800_000, 1_209_600_000, 2_592_000_000] as const;
 const LEARNING_INTERVAL_MS = 600_000;
+const MIN_REPEAT_GAP = 10;
 
 export function progressAfterRating(previous: CardProgress | undefined, rating: StudyRating, now = new Date()): CardProgress {
   const knownCount = previous?.knownCount ?? 0;
@@ -103,9 +114,8 @@ export function rateCurrentCard(
   };
   const nextQueue = [...session.queue];
   const learningRequeues = { ...session.learningRequeues };
-  if (rating === 'learning' && (learningRequeues[ratedId] ?? 0) === 0) {
-    const insertionIndex = nextQueue.length > 0 ? 1 : 0;
-    nextQueue.splice(insertionIndex, 0, ratedId);
+  if (rating === 'learning' && (learningRequeues[ratedId] ?? 0) === 0 && nextQueue.length >= MIN_REPEAT_GAP) {
+    nextQueue.push(ratedId);
     learningRequeues[ratedId] = 1;
   }
   const [currentCardId = null, ...queue] = nextQueue;
