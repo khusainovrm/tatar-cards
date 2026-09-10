@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
@@ -23,6 +23,11 @@ function renderStudy(cardCount = 2) {
   );
 }
 
+async function finishCardTransition() {
+  await waitFor(() => expect(document.querySelector('.study-card')).toHaveClass('entering'));
+  await waitFor(() => expect(document.querySelector('.study-card')).toHaveClass('idle'));
+}
+
 describe('StudyPage', () => {
   it('gates ratings until reveal and supports equivalent button control', async () => {
     const user = userEvent.setup();
@@ -31,6 +36,8 @@ describe('StudyPage', () => {
     await user.click(screen.getByRole('button', { name: 'Показать перевод' }));
     expect(screen.getByRole('button', { name: /Знаю/ })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: /Знаю/ }));
+    expect(document.querySelector('.study-card')).toHaveClass('exit-right');
+    await finishCardTransition();
     expect(screen.getByText('1 осталось')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Отменить' })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: 'Отменить' }));
@@ -49,6 +56,8 @@ describe('StudyPage', () => {
     fireEvent.pointerDown(card, { pointerId: 2, clientX: 100 });
     fireEvent.pointerMove(card, { pointerId: 2, clientX: 190 });
     fireEvent.pointerUp(card, { pointerId: 2, clientX: 190 });
+    expect(card).toHaveClass('exit-right');
+    await finishCardTransition();
     expect(screen.getByText('1 осталось')).toBeInTheDocument();
   });
 
@@ -58,6 +67,8 @@ describe('StudyPage', () => {
     await user.keyboard(' ');
     expect(screen.getByText(cards[0]!.back)).toBeInTheDocument();
     await user.keyboard('{ArrowLeft}');
+    expect(document.querySelector('.study-card')).toHaveClass('exit-left');
+    await finishCardTransition();
     expect(screen.getByRole('button', { name: 'Отменить' })).toBeEnabled();
   });
 });
