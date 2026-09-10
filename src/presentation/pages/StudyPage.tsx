@@ -42,6 +42,7 @@ export function StudyPage() {
     const [session, setSession] = useState<StudySession | null>(() => group?.cardIds.length ? createStudySession(group.cardIds, state.progressByCardId) : null);
     const [dragX, setDragX] = useState(0);
     const [cardAnimation, setCardAnimation] = useState<CardAnimation>('idle');
+    const [reverseSides, setReverseSides] = useState(false);
     const drag = useRef<DragState | null>(null);
     const pendingRating = useRef<PendingRating | null>(null);
     const cardMap = useMemo(() => new Map(cards.map((card) => [card.id, card])), [cards]);
@@ -162,6 +163,15 @@ export function StudyPage() {
                  aria-label={`${session.queue.length + 1} карточек осталось`}><span
                 style={{width: `${Math.max(8, 100 * (1 - (session.queue.length + 1) / session.sourceCardIds.length))}%`}}/>
             </div>
+            <label className="study-direction-toggle">
+                <span><strong>Сначала по-русски</strong><small>Отгадывать перевод на татарский</small></span>
+                <input
+                    type="checkbox"
+                    checked={reverseSides}
+                    disabled={cardAnimation !== 'idle'}
+                    onChange={(event) => setReverseSides(event.target.checked)}
+                />
+            </label>
             <section
                 className={`study-card ${session.revealed ? 'revealed' : ''} ${cardAnimation}`}
                 onPointerDown={pointerDown}
@@ -183,10 +193,11 @@ export function StudyPage() {
             >
                 <span className="swipe-label learning" aria-hidden="true">ИЗУЧАЮ</span><span
                 className="swipe-label known" aria-hidden="true">ЗНАЮ</span>
-                <p className="card-side-label">Татарча</p>
-                <h1 lang="tt">{current?.front}</h1>
+                <p className="card-side-label">{reverseSides ? 'По-русски' : 'Татарча'}</p>
+                <h1 lang={reverseSides ? 'ru' : 'tt'}>{reverseSides ? current?.back : current?.front}</h1>
                 {session.revealed ?
-                    <div className="translation"><span>По-русски</span><p>{current?.back}</p>
+                    <div className="translation"><span>{reverseSides ? 'Татарча' : 'По-русски'}</span>
+                        <p lang={reverseSides ? 'tt' : 'ru'}>{reverseSides ? current?.front : current?.back}</p>
                     </div> : <button className="reveal-button" type="button"
                                      onClick={() => setSession(revealAnswer(session))}>Показать
                         перевод</button>}

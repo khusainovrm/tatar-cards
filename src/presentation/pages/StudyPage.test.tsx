@@ -54,6 +54,17 @@ describe('StudyPage', () => {
     expect(screen.getByRole('button', { name: 'Отменить' })).toBeEnabled();
   });
 
+  it('can show Russian first and reveal the Tatar translation', async () => {
+    const user = userEvent.setup();
+    renderStudy(2);
+    await user.click(screen.getByRole('checkbox', { name: /Сначала по-русски/ }));
+    expect(screen.getByRole('heading', { name: cards[0]!.back })).toHaveAttribute('lang', 'ru');
+    expect(screen.queryByText(cards[0]!.front)).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Показать перевод' }));
+    expect(screen.getByText(cards[0]!.front)).toHaveAttribute('lang', 'tt');
+    expect(screen.getByText('Татарча')).toBeInTheDocument();
+  });
+
   it('snaps back below threshold and accepts right swipe above threshold', async () => {
     const user = userEvent.setup();
     renderStudy(2);

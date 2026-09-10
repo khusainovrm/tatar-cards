@@ -110,8 +110,17 @@ input:disabled, select:disabled { background: #eeeae3; }
 .study-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 15px; }
 .study-heading > div { text-align: center; display: grid; }
 .study-heading span { color: #777167; font-size: 12px; }
-.progress-track { height: 5px; overflow: hidden; background: #ddd5c8; border-radius: 99px; margin-bottom: 28px; }
+.progress-track { height: 5px; overflow: hidden; background: #ddd5c8; border-radius: 99px; margin-bottom: 14px; }
 .progress-track span { display: block; height: 100%; border-radius: inherit; background: var(--orange); transition: width .25s ease; }
+.study-direction-toggle { min-height: 48px; margin-bottom: 14px; padding: 6px 2px; display: flex; align-items: center; justify-content: space-between; gap: 18px; cursor: pointer; }
+.study-direction-toggle > span { display: grid; gap: 2px; }
+.study-direction-toggle strong { color: var(--ink); font-size: 13px; }
+.study-direction-toggle small { color: #777167; font-size: 11px; font-weight: 600; }
+.study-direction-toggle input { appearance: none; width: 48px; min-width: 48px; min-height: 28px; margin: 0; padding: 3px; border: 0; border-radius: 999px; background: #d4cec4; cursor: pointer; transition: background .18s ease; }
+.study-direction-toggle input::after { content: ''; display: block; width: 22px; height: 22px; border-radius: 50%; background: white; box-shadow: 0 2px 7px rgba(37,35,31,.2); transition: transform .18s ease; }
+.study-direction-toggle input:checked { background: var(--orange); }
+.study-direction-toggle input:checked::after { transform: translateX(20px); }
+.study-direction-toggle input:disabled { opacity: .55; cursor: not-allowed; }
 .study-card { --drag-x: 0px; --drag-rotate: 0deg; min-height: min(54vh, 530px); background: var(--paper); border: 1px solid var(--line); border-radius: 32px; padding: clamp(28px, 7vw, 62px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: var(--shadow); transform: translateX(var(--drag-x)) rotate(var(--drag-rotate)); transition: transform .2s ease; touch-action: pan-y; user-select: none; position: relative; overflow: auto; }
 .study-card:active { transition: none; }
 .study-card.exit-left { animation: study-card-exit-left .28s ease-in forwards; pointer-events: none; }
