@@ -48,6 +48,7 @@ export function isPersistedStateV1(value: unknown): value is PersistedStateV1 {
   if (!Array.isArray(value.groups) || !value.groups.every(isGroup)) return false;
   if (!isRecord(value.progressByCardId) || !Object.values(value.progressByCardId).every(isProgress)) return false;
   if (!isRecord(value.settings) || value.settings.locale !== 'ru') return false;
+  if (value.starterContentVersion !== undefined && value.starterContentVersion !== 1) return false;
   return true;
 }
 

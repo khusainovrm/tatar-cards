@@ -108,6 +108,7 @@ export function StudyPage() {
 
     function pointerDown(event: ReactPointerEvent<HTMLElement>) {
         if (!session?.currentCardId || cardAnimation !== 'idle') return;
+        if (event.target instanceof Element && event.target.closest('button')) return;
         drag.current = {
             startX: event.clientX,
             startedAt: performance.now(),

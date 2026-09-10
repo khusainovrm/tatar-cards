@@ -31,7 +31,7 @@ export function HomePage() {
           <Link to="/groups" className="text-link">Настроить группы</Link>
         </div>
         <div className="group-grid">
-          {groups.slice(0, 4).map((group) => (
+          {groups.map((group) => (
             <article className="group-card" key={group.id}>
               <div className="group-card-icon" aria-hidden="true">{group.system ? '∞' : group.name.slice(0, 1).toUpperCase()}</div>
               <div><h3>{group.name}</h3><p>{group.cardIds.length} карточек</p></div>

@@ -9,7 +9,12 @@ export function CatalogPage() {
   const [form, setForm] = useState<CardContent>(emptyForm);
   const [editing, setEditing] = useState<CustomCardId | null>(null);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [visibleCount, setVisibleCount] = useState(50);
   const readOnly = Boolean(safeModeReason);
+  const query = search.trim().toLocaleLowerCase('ru');
+  const filteredCards = [...cards.filter((card) => card.id.startsWith('custom-')), ...cards.filter((card) => !card.id.startsWith('custom-'))]
+    .filter((card) => `${card.front} ${card.back}`.toLocaleLowerCase('ru').includes(query));
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -22,6 +27,8 @@ export function CatalogPage() {
     setForm(emptyForm);
     setEditing(null);
     setError('');
+    setSearch('');
+    setVisibleCount(50);
   }
 
   function startEdit(card: CustomCard) {
@@ -47,8 +54,10 @@ export function CatalogPage() {
 
       <section className="section-block">
         <h2>Активные</h2>
+        <label>Поиск по татарскому тексту или переводу<input type="search" value={search} onChange={(event) => { setSearch(event.target.value); setVisibleCount(50); }} /></label>
+        <p>{filteredCards.length} найдено</p>
         <div className="catalog-list">
-          {cards.map((card) => {
+          {filteredCards.slice(0, visibleCount).map((card) => {
             const custom = card.id.startsWith('custom-');
             return (
               <article className="catalog-row" key={card.id}>
@@ -66,6 +75,7 @@ export function CatalogPage() {
             );
           })}
         </div>
+        {filteredCards.length > visibleCount && <div className="button-row"><button className="button secondary" type="button" onClick={() => setVisibleCount((count) => count + 50)}>Показать ещё 50</button></div>}
       </section>
 
       {hiddenCards.length > 0 && <section className="section-block muted-section"><h2>Скрытые</h2><div className="catalog-list">{hiddenCards.map((card) => <article className="catalog-row" key={card.id}><span className="type-badge muted">скрыта</span><div className="card-copy"><strong lang="tt">{card.front}</strong><span>{card.back}</span></div><button disabled={readOnly} className="icon-button" type="button" onClick={() => restoreCard(card.id)}>Вернуть</button></article>)}</div></section>}

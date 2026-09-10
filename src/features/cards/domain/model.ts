@@ -1,3 +1,5 @@
+import { starterGroups } from '../../../../content/course';
+
 export type CardType = 'word' | 'phrase';
 
 export type BuiltinCardId = `builtin-${string}`;
@@ -48,6 +50,7 @@ export interface PersistedStateV1 {
   groups: Group[];
   progressByCardId: Partial<Record<CardId, CardProgress>>;
   settings: UserSettings;
+  starterContentVersion?: 1;
 }
 
 export type PersistedState = PersistedStateV1;
@@ -58,7 +61,8 @@ export const createDefaultState = (): PersistedStateV1 => ({
   schemaVersion: 1,
   customCards: [],
   hiddenBuiltinCardIds: [],
-  groups: [],
+  groups: starterGroups.map((group) => ({ ...group, cardIds: [...group.cardIds] })),
   progressByCardId: {},
-  settings: { locale: 'ru' }
+  settings: { locale: 'ru' },
+  starterContentVersion: 1
 });

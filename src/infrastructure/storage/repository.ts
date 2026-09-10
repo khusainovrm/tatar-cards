@@ -1,5 +1,6 @@
 import { createDefaultState, type PersistedState } from '../../features/cards/domain/model';
 import { parseAndMigrate } from './schema';
+import { seedStarterGroups } from '../../../content/course';
 
 export const STORAGE_KEY = 'tatar-cards:user-state';
 
@@ -21,8 +22,9 @@ export class LocalStorageStateRepository implements StateRepository {
     if (raw === null) return { status: 'ready', state: createDefaultState(), migrated: false };
     try {
       const originalVersion = (JSON.parse(raw) as { schemaVersion?: unknown }).schemaVersion;
-      const state = parseAndMigrate(raw);
-      return { status: 'ready', state, migrated: originalVersion !== state.schemaVersion };
+      const parsed = parseAndMigrate(raw);
+      const state = seedStarterGroups(parsed);
+      return { status: 'ready', state, migrated: originalVersion !== state.schemaVersion || state !== parsed };
     } catch (error) {
       return {
         status: 'safe-mode',

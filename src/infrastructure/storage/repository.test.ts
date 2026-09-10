@@ -19,6 +19,27 @@ describe('local state repository', () => {
     expect(migrated).toMatchObject({ schemaVersion: 1, hiddenBuiltinCardIds: ['builtin-one'], settings: { locale: 'ru' } });
   });
 
+  it('adds starter groups to existing data once without replacing user content or progress', () => {
+    const state = createDefaultState();
+    delete state.starterContentVersion;
+    state.groups = [{ id: 'group-personal', name: 'Мои фразы', cardIds: ['builtin-phrase-001'] }];
+    state.hiddenBuiltinCardIds = ['builtin-phrase-002'];
+    state.customCards = [{ id: 'custom-own', front: 'Мин монда.', back: 'Я здесь.', type: 'phrase', createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z' }];
+    state.progressByCardId = { 'builtin-phrase-001': { knownCount: 2, learningCount: 1, lastResult: 'known', lastReviewedAt: '2026-01-01T00:00:00.000Z', dueAt: '2026-01-02T00:00:00.000Z' } };
+    const repo = new LocalStorageStateRepository(localStorage);
+    repo.save(state);
+    const loaded = repo.load().state;
+    expect(loaded.groups).toHaveLength(21);
+    expect(loaded.groups[0]).toEqual(state.groups[0]);
+    expect(loaded.customCards).toEqual(state.customCards);
+    expect(loaded.hiddenBuiltinCardIds).toEqual(state.hiddenBuiltinCardIds);
+    expect(loaded.progressByCardId).toEqual(state.progressByCardId);
+    loaded.groups = loaded.groups.filter((group) => group.id !== 'group-a1-greetings');
+    loaded.groups[1]!.name = 'Моё название';
+    repo.save(loaded);
+    expect(repo.load().state).toEqual(loaded);
+  });
+
   it('remaps card identifiers in visibility, groups, and progress', () => {
     const oldId = 'builtin-old' as BuiltinCardId;
     const newId = 'builtin-new' as BuiltinCardId;
