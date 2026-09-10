@@ -21,6 +21,15 @@ test-results/
 !.env.example
 *.local
 *.log
+*.jks
+*.keystore
+*.p12
+*.apk
+*.aab
+android/.gradle/
+android/**/build/
+android/local.properties
+android/keystore.properties
 npm-debug.log*
 
 # Editors and operating systems

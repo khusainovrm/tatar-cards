@@ -33,6 +33,8 @@ npx playwright install chromium
 
 ## Деплой
 
+Подготовка Android TWA и публикация в RuStore: [TWA-RUSTORE.md](./TWA-RUSTORE.md). Публичные параметры привязки задаются в `twa/release.config.json`; после заполнения выполните `npm run twa:prepare`.
+
 Проект собирается в статический каталог `dist` и готов к деплою на Vercel. `vercel.json` перенаправляет клиентские маршруты на SPA entry point, а service worker и manifest генерируются при production-сборке.
 
 Архитектура и требования описаны в [`openspec/changes/new-app`](./openspec/changes/new-app/).

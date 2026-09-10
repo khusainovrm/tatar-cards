@@ -11,6 +11,8 @@
     "build": "npm run validate:cards && tsc -b && vite build",
     "validate:cards": "tsx scripts/validate-cards.ts",
     "typecheck": "tsc -b --pretty false",
+    "twa:prepare": "node scripts/prepare-twa.mjs",
+    "twa:check": "node scripts/prepare-twa.mjs --check",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
