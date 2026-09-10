@@ -29,11 +29,9 @@ async function finishCardTransition() {
 }
 
 describe('StudyPage', () => {
-  it('gates ratings until reveal and supports equivalent button control', async () => {
+  it('allows rating without revealing the translation', async () => {
     const user = userEvent.setup();
     renderStudy(2);
-    expect(screen.getByRole('button', { name: /Знаю/ })).toBeDisabled();
-    await user.click(screen.getByRole('button', { name: 'Показать перевод' }));
     expect(screen.getByRole('button', { name: /Знаю/ })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: /Знаю/ }));
     expect(document.querySelector('.study-card')).toHaveClass('exit-right');
@@ -42,6 +40,18 @@ describe('StudyPage', () => {
     expect(screen.getByRole('button', { name: 'Отменить' })).toBeEnabled();
     await user.click(screen.getByRole('button', { name: 'Отменить' }));
     expect(screen.getByText('2 осталось')).toBeInTheDocument();
+  });
+
+  it('accepts a swipe before the translation is revealed', async () => {
+    renderStudy(2);
+    const card = screen.getByText(cards[0]!.front).closest('section')!;
+    fireEvent.pointerDown(card, { pointerId: 1, clientX: 190 });
+    fireEvent.pointerMove(card, { pointerId: 1, clientX: 100 });
+    fireEvent.pointerUp(card, { pointerId: 1, clientX: 100 });
+    expect(card).toHaveClass('exit-left');
+    await finishCardTransition();
+    expect(screen.getByText(cards[1]!.front)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Отменить' })).toBeEnabled();
   });
 
   it('snaps back below threshold and accepts right swipe above threshold', async () => {

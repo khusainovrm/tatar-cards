@@ -14,13 +14,12 @@ describe('study session domain', () => {
     expect([session.currentCardId, ...session.queue]).toEqual([a, b, c]);
   });
 
-  it('requires reveal before rating and reinserts learning after another card once', () => {
+  it('allows rating before reveal and reinserts learning after another card once', () => {
     const initial = createStudySession([a, b, c], {}, now);
-    expect(rateCurrentCard(initial, 'known')).toBe(initial);
-    const rated = rateCurrentCard(revealAnswer(initial), 'learning');
+    const rated = rateCurrentCard(initial, 'learning');
     expect([rated.currentCardId, ...rated.queue]).toEqual([b, a, c]);
-    const second = rateCurrentCard(revealAnswer(rated), 'known');
-    const repeated = rateCurrentCard(revealAnswer(second), 'learning');
+    const second = rateCurrentCard(rated, 'known');
+    const repeated = rateCurrentCard(second, 'learning');
     expect([repeated.currentCardId, ...repeated.queue]).toEqual([c]);
   });
 

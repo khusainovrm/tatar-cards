@@ -66,7 +66,7 @@ export function StudyPage() {
     }, [setProgress]);
 
     const rate = useCallback((rating: StudyRating) => {
-        if (!session?.currentCardId || !session.revealed || cardAnimation !== 'idle') return;
+        if (!session?.currentCardId || cardAnimation !== 'idle') return;
         const cardId = session.currentCardId;
         const previous = state.progressByCardId[cardId];
         pendingRating.current = {rating, session, previousProgress: previous};
@@ -106,7 +106,7 @@ export function StudyPage() {
     }, [rate, undo]);
 
     function pointerDown(event: ReactPointerEvent<HTMLElement>) {
-        if (!session?.revealed || cardAnimation !== 'idle') return;
+        if (!session?.currentCardId || cardAnimation !== 'idle') return;
         drag.current = {
             startX: event.clientX,
             startedAt: performance.now(),
@@ -192,11 +192,11 @@ export function StudyPage() {
                         перевод</button>}
             </section>
             <div className="study-controls">
-                <button disabled={!session.revealed || cardAnimation !== 'idle'} className="rating-button learning"
+                <button disabled={cardAnimation !== 'idle'} className="rating-button learning"
                         type="button" onClick={() => rate('learning')}><span
                     aria-hidden="true">←</span><span>Изучаю<small>свайп влево</small></span>
                 </button>
-                <button disabled={!session.revealed || cardAnimation !== 'idle'} className="rating-button known" type="button"
+                <button disabled={cardAnimation !== 'idle'} className="rating-button known" type="button"
                         onClick={() => rate('known')}>
                     <span>Знаю<small>свайп вправо</small></span><span aria-hidden="true">→</span>
                 </button>

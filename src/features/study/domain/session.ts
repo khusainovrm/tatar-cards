@@ -92,7 +92,7 @@ export function rateCurrentCard(
   rating: StudyRating,
   previousProgress?: CardProgress
 ): StudySession {
-  if (!session.currentCardId || !session.revealed || session.complete) return session;
+  if (!session.currentCardId || session.complete) return session;
   const ratedId = session.currentCardId;
   const snapshot: SessionSnapshot = {
     queue: [...session.queue],
